@@ -43,10 +43,12 @@ ${JSON.stringify(bundle.pages, null, 2)}
         { role: "user", content: prompt }
       ],
       text: {
-        format: {
-          type: "json_schema",
-          json_schema: causeDescriptionSchema
-        }
+          format: {
+            type: "json_schema",
+            name: causeDescriptionSchema.name,
+            schema: causeDescriptionSchema.schema,
+            strict: true
+            }
       },
       temperature: 0.3
     });
