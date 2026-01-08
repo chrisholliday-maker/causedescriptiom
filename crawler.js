@@ -1,5 +1,6 @@
 import { JSDOM } from "jsdom";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
+
 
 function normalizeUrl(url) {
   try {
