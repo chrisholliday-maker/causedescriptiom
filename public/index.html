@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cause Description Generator (POC)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Cause Description Generator</h1>
+    <p class="sub">Enter a charity / cause website URL and generate a draft description.</p>
+
+    <div class="card">
+      <label for="url">Cause website URL</label>
+      <div class="row">
+        <input id="url" type="url" placeholder="https://example.org" />
+        <button id="generate">Generate</button>
+      </div>
+      <p class="hint">We’ll fetch a few key pages (Home/About/What we do) and draft a description you can edit.</p>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="results" class="card hidden">
+      <h2>Generated output</h2>
+
+      <div class="pill-row">
+        <span id="confidence" class="pill"></span>
+        <span id="location" class="pill"></span>
+      </div>
+
+      <h3>Short description</h3>
+      <textarea id="short" rows="3"></textarea>
+
+      <h3>Long description (≤ 500 words)</h3>
+      <textarea id="long" rows="12"></textarea>
+
+      <h3>Tags</h3>
+      <input id="tags" type="text" placeholder="e.g. youth, education, community" />
+
+      <details class="details">
+        <summary>Evidence & sources</summary>
+        <ul id="evidence"></ul>
+        <p><strong>Sources used:</strong></p>
+        <ul id="sources"></ul>
+      </details>
+
+      <div class="actions">
+        <button id="copy">Copy all</button>
+        <button id="regenerate" class="secondary">Regenerate</button>
+      </div>
+
+      <p class="hint">Tip: You can edit the generated text before copying it.</p>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
