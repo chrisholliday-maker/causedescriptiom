@@ -77,7 +77,8 @@ async function run() {
     const data = await res.json();
 
     if (!res.ok) {
-      showStatus(`Error: ${data.error || "Request failed"}`);
+      const details = data.details ? ` — ${data.details}` : "";
+      showStatus(`Error: ${data.error || "Request failed"}${details}`);
       return;
     }
 
