@@ -222,5 +222,5 @@ const logo_url = extractLogoUrlFromHtml(homepageHtml, url);
     cappedPages.push(p);
   }
 
-  return { url, pages: cappedPages };
+  return { url, pages: cappedPages, logo_url };
 }
