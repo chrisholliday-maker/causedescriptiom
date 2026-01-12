@@ -106,20 +106,4 @@ button:disabled { opacity: 0.6; cursor: not-allowed; }
 ul { padding-left: 20px; }
 li { margin: 6px 0; }
 
-.logo-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 10px 0 14px;
-}
 
-.logo {
-  height: 56px;
-  width: auto;
-  max-width: 240px;
-  object-fit: contain;
-  border: 1px solid #e6e6ee;
-  border-radius: 12px;
-  background: #fff;
-  padding: 6px;
-}
