@@ -71,10 +71,14 @@ async function run() {
  
   // Logo (may fail to load if hotlinking blocked)
 if (data.logo_url) {
+  logoEl.loading = "lazy";
   logoEl.src = `/api/logo?url=${encodeURIComponent(data.logo_url)}`;
   logoEl.classList.remove("hidden");
+
+  const t = setTimeout(() => logoEl.classList.add("hidden"), 7000); // hide if slow
+  logoEl.onload = () => clearTimeout(t);
   logoEl.onerror = () => {
-    // hide if it fails to load
+    clearTimeout(t);
     logoEl.classList.add("hidden");
   };
 } else {
