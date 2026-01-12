@@ -23,57 +23,7 @@ function pickBestIcon(icons) {
   return scored[0] || null;
 }
 
-function extractLogoUrlFromHtml(html, baseUrl) {
-  const $ = cheerio.load(html);
 
-  // 1) OpenGraph image (often logo or brand image)
-  const og = $('meta[property="og:image"]').attr("content");
-  const ogAbs = absoluteUrl(og, baseUrl);
-  if (ogAbs) return ogAbs;
-
-  // 2) Twitter image
-  const tw = $('meta[name="twitter:image"]').attr("content");
-  const twAbs = absoluteUrl(tw, baseUrl);
-  if (twAbs) return twAbs;
-
-  // 3) Apple touch icon
-  const apple = $('link[rel="apple-touch-icon"]').attr("href");
-  const appleAbs = absoluteUrl(apple, baseUrl);
-  if (appleAbs) return appleAbs;
-
-  // 4) Icons (prefer largest)
-  const iconLinks = [];
-  $('link[rel="icon"], link[rel="shortcut icon"]').each((_, el) => {
-    iconLinks.push({
-      href: $(el).attr("href"),
-      sizes: $(el).attr("sizes") || ""
-    });
-  });
-  const best = pickBestIcon(iconLinks);
-  const bestAbs = absoluteUrl(best?.href, baseUrl);
-  if (bestAbs) return bestAbs;
-
-  // 5) Heuristic: first image in header/nav with “logo” in class/id/alt/src
-  const logoImg =
-    $('header img, nav img, img').filter((_, el) => {
-      const alt = ($(el).attr("alt") || "").toLowerCase();
-      const cls = ($(el).attr("class") || "").toLowerCase();
-      const id = ($(el).attr("id") || "").toLowerCase();
-      const src = ($(el).attr("src") || "").toLowerCase();
-      return (
-        alt.includes("logo") ||
-        cls.includes("logo") ||
-        id.includes("logo") ||
-        src.includes("logo")
-      );
-    }).first();
-
-  const src = logoImg.attr("src") || logoImg.attr("data-src");
-  const srcAbs = absoluteUrl(src, baseUrl);
-  if (srcAbs) return srcAbs;
-
-  return null;
-}
 
 function normalizeUrl(url) {
   try {
