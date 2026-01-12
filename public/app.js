@@ -16,6 +16,8 @@ const locationEl = document.getElementById("location");
 const evidenceEl = document.getElementById("evidence");
 const sourcesEl = document.getElementById("sources");
 
+const logoEl = document.getElementById("logo");
+
 function setLoading(isLoading) {
   generateBtn.disabled = isLoading;
   regenBtn.disabled = isLoading;
@@ -66,6 +68,18 @@ async function run() {
   setLoading(true);
   showStatus("Fetching pages and generating description…");
   resultsEl.classList.add("hidden");
+ 
+  // Logo (may fail to load if hotlinking blocked)
+if (data.logo_url) {
+  logoEl.src = data.logo_url;
+  logoEl.classList.remove("hidden");
+  logoEl.onerror = () => {
+    // hide if it fails to load
+    logoEl.classList.add("hidden");
+  };
+} else {
+  logoEl.classList.add("hidden");
+}
 
   try {
     const res = await fetch("/api/generate", {
