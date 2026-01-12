@@ -142,7 +142,7 @@ if (!homepageHtml) {
   return { url, pages: [] };
 }
 
-const logo_url = extractLogoUrlFromHtml(homepageHtml, url);
+
 
   const homepage = extractReadableText(homepageHtml, url);
   const links = extractLinks(homepageHtml, url)
