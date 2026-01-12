@@ -12,11 +12,10 @@ const tagsEl = document.getElementById("tags");
 
 const confidenceEl = document.getElementById("confidence");
 const locationEl = document.getElementById("location");
+const logoEl = document.getElementById("logo");
 
 const evidenceEl = document.getElementById("evidence");
 const sourcesEl = document.getElementById("sources");
-
-
 
 function setLoading(isLoading) {
   generateBtn.disabled = isLoading;
@@ -35,6 +34,21 @@ function renderResult(data) {
   confidenceEl.textContent = `Confidence: ${data.confidence || "unknown"}`;
   locationEl.textContent = data.location ? `Location: ${data.location}` : "Location: not specified";
 
+  if (data.logo_url) {
+    logoEl.loading = "lazy";
+    logoEl.src = `/api/logo?url=${encodeURIComponent(data.logo_url)}`;
+    logoEl.classList.remove("hidden");
+
+    const t = setTimeout(() => logoEl.classList.add("hidden"), 7000);
+    logoEl.onload = () => clearTimeout(t);
+    logoEl.onerror = () => {
+      clearTimeout(t);
+      logoEl.classList.add("hidden");
+    };
+  } else {
+    logoEl.classList.add("hidden");
+  }
+
   shortEl.value = data.short_description || "";
   longEl.value = data.long_description || "";
   tagsEl.value = Array.isArray(data.tags) ? data.tags.join(", ") : "";
@@ -43,7 +57,7 @@ function renderResult(data) {
   if (Array.isArray(data.evidence)) {
     for (const ev of data.evidence) {
       const li = document.createElement("li");
-      li.innerHTML = `${ev.claim} <br/><a href="${ev.source_url}" target="_blank">${ev.source_url}</a>`;
+      li.innerHTML = `${ev.claim} <br/><a href="${ev.source_url}" target="_blank" rel="noreferrer">${ev.source_url}</a>`;
       evidenceEl.appendChild(li);
     }
   }
@@ -52,7 +66,7 @@ function renderResult(data) {
   if (Array.isArray(data.sources_used)) {
     for (const s of data.sources_used) {
       const li = document.createElement("li");
-      li.innerHTML = `<a href="${s}" target="_blank">${s}</a>`;
+      li.innerHTML = `<a href="${s}" target="_blank" rel="noreferrer">${s}</a>`;
       sourcesEl.appendChild(li);
     }
   }
@@ -68,8 +82,6 @@ async function run() {
   setLoading(true);
   showStatus("Fetching pages and generating description…");
   resultsEl.classList.add("hidden");
- 
-  
 
   try {
     const res = await fetch("/api/generate", {
