@@ -71,7 +71,7 @@ async function run() {
  
   // Logo (may fail to load if hotlinking blocked)
 if (data.logo_url) {
-  logoEl.src = data.logo_url;
+  logoEl.src = `/api/logo?url=${encodeURIComponent(data.logo_url)}`;
   logoEl.classList.remove("hidden");
   logoEl.onerror = () => {
     // hide if it fails to load
