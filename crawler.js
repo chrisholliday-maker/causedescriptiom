@@ -188,9 +188,11 @@ export async function buildContentBundleFromUrl(inputUrl) {
   }
 
   const homepageHtml = await fetchHtml(url);
-  if (!homepageHtml) {
-    return { url, pages: [] };
-  }
+if (!homepageHtml) {
+  return { url, pages: [] };
+}
+
+const logo_url = extractLogoUrlFromHtml(homepageHtml, url);
 
   const homepage = extractReadableText(homepageHtml, url);
   const links = extractLinks(homepageHtml, url)
