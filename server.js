@@ -45,7 +45,6 @@ app.post("/api/generate", async (req, res) => {
 
     res.json({
   ...result.data,
-  logo_url: bundle.logo_url || null,
   sources_used: bundle.pages.map(p => p.url),
   notes: "Generated from website text. Please review."
 });
