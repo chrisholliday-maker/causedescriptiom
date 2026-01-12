@@ -1,30 +1,6 @@
 import { JSDOM } from "jsdom";
 import * as cheerio from "cheerio";
 
-function absoluteUrl(maybeUrl, baseUrl) {
-  try {
-    if (!maybeUrl) return null;
-    return new URL(maybeUrl, baseUrl).toString();
-  } catch {
-    return null;
-  }
-}
-
-function pickBestIcon(icons) {
-  // Prefer biggest sizes, then any icon
-  const scored = icons
-    .map(i => {
-      const sizes = (i.sizes || "").toLowerCase();
-      const match = sizes.match(/(\d+)x(\d+)/);
-      const area = match ? (parseInt(match[1], 10) * parseInt(match[2], 10)) : 0;
-      return { ...i, area };
-    })
-    .sort((a, b) => (b.area - a.area));
-  return scored[0] || null;
-}
-
-
-
 function normalizeUrl(url) {
   try {
     let u = new URL(url);
@@ -58,6 +34,8 @@ async function fetchHtml(url) {
     const contentType = res.headers.get("content-type") || "";
     if (!contentType.includes("text/html")) return null;
     return await res.text();
+  } catch {
+    return null;
   } finally {
     clearTimeout(timeout);
   }
@@ -98,7 +76,9 @@ function scoreLink(url) {
     "projects",
     "programmes",
     "programs",
-    "donate"
+    "donate",
+    "get-involved",
+    "support-us"
   ];
 
   let score = 0;
@@ -131,18 +111,88 @@ function extractReadableText(html, url) {
   };
 }
 
+function absoluteUrl(maybeUrl, baseUrl) {
+  try {
+    if (!maybeUrl) return null;
+    return new URL(maybeUrl, baseUrl).toString();
+  } catch {
+    return null;
+  }
+}
+
+function pickBestIcon(icons) {
+  const scored = icons
+    .map(i => {
+      const sizes = (i.sizes || "").toLowerCase();
+      const match = sizes.match(/(\d+)x(\d+)/);
+      const area = match ? (parseInt(match[1], 10) * parseInt(match[2], 10)) : 0;
+      return { ...i, area };
+    })
+    .sort((a, b) => (b.area - a.area));
+  return scored[0] || null;
+}
+
+function extractLogoUrlFromHtml(html, baseUrl) {
+  const $ = cheerio.load(html);
+
+  // Prefer small, fast assets first
+  const apple = $('link[rel="apple-touch-icon"]').attr("href");
+  const appleAbs = absoluteUrl(apple, baseUrl);
+  if (appleAbs) return appleAbs;
+
+  const iconLinks = [];
+  $('link[rel="icon"], link[rel="shortcut icon"]').each((_, el) => {
+    iconLinks.push({
+      href: $(el).attr("href"),
+      sizes: $(el).attr("sizes") || ""
+    });
+  });
+  const best = pickBestIcon(iconLinks);
+  const bestAbs = absoluteUrl(best?.href, baseUrl);
+  if (bestAbs) return bestAbs;
+
+  const logoImg =
+    $('header img, nav img, img').filter((_, el) => {
+      const alt = ($(el).attr("alt") || "").toLowerCase();
+      const cls = ($(el).attr("class") || "").toLowerCase();
+      const id = ($(el).attr("id") || "").toLowerCase();
+      const src = ($(el).attr("src") || "").toLowerCase();
+      return (
+        alt.includes("logo") ||
+        cls.includes("logo") ||
+        id.includes("logo") ||
+        src.includes("logo")
+      );
+    }).first();
+
+  const src = logoImg.attr("src") || logoImg.attr("data-src");
+  const srcAbs = absoluteUrl(src, baseUrl);
+  if (srcAbs) return srcAbs;
+
+  // Social images last (can be huge/slow)
+  const og = $('meta[property="og:image"]').attr("content");
+  const ogAbs = absoluteUrl(og, baseUrl);
+  if (ogAbs) return ogAbs;
+
+  const tw = $('meta[name="twitter:image"]').attr("content");
+  const twAbs = absoluteUrl(tw, baseUrl);
+  if (twAbs) return twAbs;
+
+  return null;
+}
+
 export async function buildContentBundleFromUrl(inputUrl) {
   const url = normalizeUrl(inputUrl);
   if (!url) {
-    return { url: inputUrl, pages: [] };
+    return { url: inputUrl, pages: [], logo_url: null };
   }
 
   const homepageHtml = await fetchHtml(url);
-if (!homepageHtml) {
-  return { url, pages: [] };
-}
+  if (!homepageHtml) {
+    return { url, pages: [], logo_url: null };
+  }
 
-
+  const logo_url = extractLogoUrlFromHtml(homepageHtml, url);
 
   const homepage = extractReadableText(homepageHtml, url);
   const links = extractLinks(homepageHtml, url)
@@ -172,5 +222,5 @@ if (!homepageHtml) {
     cappedPages.push(p);
   }
 
-  return { url, pages: cappedPages };
+  return { url, pages: cappedPages, logo_url };
 }

@@ -1,6 +1,5 @@
 export const causeDescriptionSchema = {
   name: "CauseDescription",
-  strict: true,
   schema: {
     type: "object",
     additionalProperties: false,

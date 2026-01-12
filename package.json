@@ -1,11 +1,11 @@
 {
   "name": "cause-description-poc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "server.js",
   "engines": {
-  "node": ">=18 <22"
-},
+    "node": ">=18 <23"
+  },
   "scripts": {
     "start": "node server.js"
   },

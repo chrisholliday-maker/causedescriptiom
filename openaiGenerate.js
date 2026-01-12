@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { causeDescriptionSchema } from "./schema.js";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
 function wordCount(text) {
   return text.trim().split(/\s+/).filter(Boolean).length;
@@ -43,12 +43,12 @@ ${JSON.stringify(bundle.pages, null, 2)}
         { role: "user", content: prompt }
       ],
       text: {
-          format: {
-            type: "json_schema",
-            name: causeDescriptionSchema.name,
-            schema: causeDescriptionSchema.schema,
-            strict: true
-            }
+        format: {
+          type: "json_schema",
+          name: causeDescriptionSchema.name,
+          schema: causeDescriptionSchema.schema,
+          strict: true
+        }
       },
       temperature: 0.3
     });
