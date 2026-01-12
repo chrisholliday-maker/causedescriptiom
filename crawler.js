@@ -172,5 +172,5 @@ if (!homepageHtml) {
     cappedPages.push(p);
   }
 
-  return { url, pages: cappedPages, logo_url };
+  return { url, pages: cappedPages };
 }
