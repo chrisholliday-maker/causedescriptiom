@@ -44,10 +44,11 @@ app.post("/api/generate", async (req, res) => {
     }
 
     res.json({
-      ...result.data,
-      sources_used: bundle.pages.map(p => p.url),
-      notes: "Generated from website text. Please review."
-    });
+  ...result.data,
+  logo_url: bundle.logo_url || null,
+  sources_used: bundle.pages.map(p => p.url),
+  notes: "Generated from website text. Please review."
+});
   } catch (err) {
     res.status(500).json({ error: "Server error", details: String(err?.message || err) });
   }
