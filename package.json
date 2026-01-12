@@ -5,7 +5,7 @@
   "main": "server.js",
   "engines": {
   "node": ">=18 <22"
-}
+},
   "scripts": {
     "start": "node server.js"
   },
