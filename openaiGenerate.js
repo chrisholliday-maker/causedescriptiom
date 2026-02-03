@@ -15,8 +15,8 @@ You are writing descriptions for nonprofit organisations ("causes") on a fundrai
 
 IMPORTANT RULES:
 - Use ONLY the content provided in the "pages" below.
-- Do NOT invent facts, numbers, claims, partners, awards, registration status, or locations.
-- If details are unclear or missing, write a more general description and set confidence to "medium" or "low".
+- ONLY use facts, numbers, claims, partners, awards, registration status, or locations that are found in the given pages.
+- Give a confidence of high if mission, activities and beneficiaries are clearly described, medium if mession is clear but activities or scope are vague and low if minimal or unclear information across the given pages.
 - Write in UK English. Keep tone professional, warm, and factual.
 - Avoid marketing fluff (e.g., "world-class", "leading") unless explicitly stated.
 - Avoid sensitive assumptions unless explicitly stated.
