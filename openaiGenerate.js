@@ -20,7 +20,7 @@ IMPORTANT RULES:
 - Write in UK English. Keep tone professional, warm, and factual.
 - Avoid marketing fluff (e.g., "world-class", "leading") unless explicitly stated.
 - Avoid sensitive assumptions unless explicitly stated.
-- The long_description MUST be <= 500 words.
+- The long_description MUST be <= 300 words.
 - short_description MUST be <= 240 characters.
 - Produce 1–6 tags (lowercase, short).
 - location should be null unless clearly stated.
