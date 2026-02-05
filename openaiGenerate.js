@@ -13,6 +13,10 @@ export async function generateCauseDescriptionFromPages(bundle) {
     const prompt = `
 You are writing descriptions for nonprofit organisations ("causes") on a fundraising platform.
 
+CONTEXT:
+- The input may be a normal website OR a social profile/page (e.g. a Facebook page).
+- Social pages may contain limited "About" information and short post excerpts. Use what is available.
+
 IMPORTANT RULES:
 - Use ONLY the content provided in the "pages" below.
 - ONLY use facts, numbers, claims, partners, awards, registration status, or locations that are found in the given pages.
@@ -25,6 +29,17 @@ IMPORTANT RULES:
 - Produce 1–6 tags (lowercase, short).
 - location should be null unless clearly stated.
 - Provide evidence claims that map to source_url. Every key claim in the description should be supported by evidence.
+
+HOW TO HANDLE FACEBOOK / SOCIAL PAGES:
+- Prefer any "About", "Intro", "Bio", or mission-style text if present.
+- If the content is mostly post snippets, summarise what the organisation does based on repeated themes (e.g., fundraising events, community support), but do not guess specifics.
+- Do NOT quote or include personal data from posts (phone numbers, emails, addresses, names of private individuals) unless it clearly represents the organisation (e.g., the official page name).
+- If there is insufficient information (e.g., mostly navigation text, cookie banners, “Log in to continue”), set confidence to "low" and produce a cautious, generic description.
+
+EVIDENCE REQUIREMENT:
+- Provide evidence claims that map to source_url (from the provided pages only).
+- Every key claim in the descriptions should be supported by at least one evidence item.
+- If you cannot support a claim with the provided text, omit it.
 
 OUTPUT FORMAT:
 Return JSON matching the provided schema exactly.
