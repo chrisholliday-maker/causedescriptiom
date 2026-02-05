@@ -66,12 +66,7 @@ app.get("/api/logo", async (req, res) => {
 
 app.post("/api/generate", async (req, res) => {
   const { url } = req.body || {};
-  console.log("URL:", url);
-console.log("Pages returned:", bundle.pages.length);
-console.log(
-  "First page preview:",
-  bundle.pages?.[0]?.text?.slice(0, 200)
-);
+ 
 
   if (!url || typeof url !== "string") {
     return res.status(400).json({ error: "Missing or invalid url" });
@@ -79,7 +74,12 @@ console.log(
 
   try {
     const bundle = await buildContentBundleFromUrl(url);
-
+ console.log("URL:", url);
+console.log("Pages returned:", bundle.pages.length);
+console.log(
+  "First page preview:",
+  bundle.pages?.[0]?.text?.slice(0, 200)
+);
     if (!bundle.pages.length) {
       return res.status(200).json({
         confidence: "low",
