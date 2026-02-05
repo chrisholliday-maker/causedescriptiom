@@ -25,9 +25,10 @@ async function fetchHtml(url) {
   try {
     const res = await fetch(url, {
       headers: {
-        "user-agent": "Mozilla/5.0 (POC Cause Description Generator)",
-        "accept": "text/html,application/xhtml+xml"
-      },
+  "user-agent": "Mozilla/5.0 (POC Cause Description Generator)",
+  "accept": "text/html,application/xhtml+xml",
+  "accept-language": "en-GB,en;q=0.9"
+},
       signal: controller.signal
     });
     if (!res.ok) return null;
@@ -221,23 +222,50 @@ function extractLogoUrlFromHtml(html, baseUrl) {
 
 export async function buildContentBundleFromUrl(inputUrl) {
   const url = normalizeUrl(inputUrl);
+  const host = new URL(url).hostname.toLowerCase();
+const isFacebook = host === "facebook.com" || host.endsWith(".facebook.com");
   if (!url) {
     return { url: inputUrl, pages: [], logo_url: null };
   }
 
   const homepageHtml = await fetchHtml(url);
-  if (!homepageHtml) {
-    return { url, pages: [], logo_url: null };
-  }
+ if (!homepageHtml) {
+  return { url, pages: [], logo_url: null };
+}
 
-  const logo_url = extractLogoUrlFromHtml(homepageHtml, url);
+const logo_url = extractLogoUrlFromHtml(homepageHtml, url);
 
-  const homepage = extractReadableText(homepageHtml, url);
-  const links = extractLinks(homepageHtml, url)
-    .sort((a, b) => scoreLink(b) - scoreLink(a))
-    .slice(0, 7);
+// ✅ Facebook-specific: don’t follow links; use meta tags if body text is poor
+if (isFacebook) {
+  const meta = extractMetaSummary(homepageHtml, url);
 
-  const pages = [{ url, title: homepage.title, text: homepage.text }];
+  // Try normal readable text too (sometimes FB allows some content)
+  const readable = extractReadableText(homepageHtml, url);
+
+  // Prefer whichever is more useful
+  const combinedText = !looksBlockedOrEmpty(readable.text)
+    ? readable.text
+    : meta.text;
+
+  const pageText = combinedText?.slice(0, 12000) || "";
+
+  // Always return 1 page for FB if we have anything at all
+  const pages = pageText
+    ? [{ url, title: meta.title || readable.title || "Facebook page", text: pageText }]
+    : [];
+
+  return { url, pages, logo_url };
+}
+
+// ✅ Normal website flow (unchanged)
+const homepage = extractReadableText(homepageHtml, url);
+const links = extractLinks(homepageHtml, url)
+  .sort((a, b) => scoreLink(b) - scoreLink(a))
+  .slice(0, 7);
+
+const pages = [{ url, title: homepage.title, text: homepage.text }];
+
+// fetch up to 5 additional pages as before...
 
   for (const link of links) {
     if (pages.length >= 6) break;
