@@ -120,6 +120,44 @@ function absoluteUrl(maybeUrl, baseUrl) {
   }
 }
 
+function extractMetaSummary(html, baseUrl) {
+  const $ = cheerio.load(html);
+
+  const title =
+    $('meta[property="og:title"]').attr("content") ||
+    $("title").text().trim() ||
+    null;
+
+  const description =
+    $('meta[property="og:description"]').attr("content") ||
+    $('meta[name="description"]').attr("content") ||
+    $('meta[name="twitter:description"]').attr("content") ||
+    null;
+
+  // If we found something useful, turn it into “page text”
+  const parts = [];
+  if (title) parts.push(`Title: ${title}`);
+  if (description) parts.push(`Description: ${description}`);
+
+  return {
+    title: title || "Facebook page",
+    text: parts.join("\n").trim()
+  };
+}
+
+function looksBlockedOrEmpty(text) {
+  if (!text) return true;
+  const t = text.toLowerCase();
+  return (
+    t.includes("log in") ||
+    t.includes("login") ||
+    t.includes("sign up") ||
+    t.includes("you’re temporarily blocked") ||
+    t.includes("temporarily blocked") ||
+    t.includes("cookie") ||
+    t.length < 120
+  );
+}
 function pickBestIcon(icons) {
   const scored = icons
     .map(i => {
